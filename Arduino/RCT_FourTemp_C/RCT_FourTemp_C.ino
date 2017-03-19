@@ -1,17 +1,19 @@
 /*
-   -----------------------------------------------------------
-                Jeti FourTemp Sensor v 1.0
-   -----------------------------------------------------------
-
-    Tero Salminen RC-Thoughts.com (c) 2017 www.rc-thoughts.com
-
+  -----------------------------------------------------------
+                Jeti FourTemp Sensor v 1.1
   -----------------------------------------------------------
 
-        Tmepereature sensor for 4 separate sensors
+   Tero Salminen RC-Thoughts.com (c) 2017 www.rc-thoughts.com
+
+  -----------------------------------------------------------
+  
+                    Celsius version
+
+        Temperature sensor for 4 separate sensors
       Uses Dallas DS18S20 and Arduino Pro Mini 3.3V 8Mhz
 
   -----------------------------------------------------------
-    Shared under MIT-license by Tero Salminen (c) 2017
+      Shared under MIT-license by Tero Salminen (c) 2017
   -----------------------------------------------------------
 */
 
@@ -23,10 +25,18 @@
 #include <DallasTemperature.h>
 #include "Wire.h"
 
-#define ONE_WIRE_BUS 2
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature sensors(&oneWire);
-
+#define ONE_WIRE_BUS_1 6
+#define ONE_WIRE_BUS_2 7
+#define ONE_WIRE_BUS_3 8
+#define ONE_WIRE_BUS_4 9
+OneWire oneWire_1(ONE_WIRE_BUS_1);
+OneWire oneWire_2(ONE_WIRE_BUS_2);
+OneWire oneWire_3(ONE_WIRE_BUS_3);
+OneWire oneWire_4(ONE_WIRE_BUS_4);
+DallasTemperature sensor_1(&oneWire_1);
+DallasTemperature sensor_2(&oneWire_2);
+DallasTemperature sensor_3(&oneWire_3);
+DallasTemperature sensor_4(&oneWire_4);
 
 #define prog_char  char PROGMEM
 #define GETCHAR_TIMEOUT_ms 20
@@ -56,7 +66,7 @@ DallasTemperature sensors(&oneWire);
 #define ITEMVAL_4 (volatile float*)&uTemp4
 
 #define ABOUT_1 F(" RCT Jeti Tools")
-#define ABOUT_2 F(" RCT FourTemp")
+#define ABOUT_2 F("  RCT FourTemp")
 
 SoftwareSerial JetiSerial(JETI_RX, JETI_TX);
 
@@ -184,7 +194,6 @@ float uTemp2 = 0;
 float uTemp3 = 0;
 float uTemp4 = 0;
 
-
 #define MAX_SCREEN 3
 #define MAX_CONFIG 1
 #define COND_LES_EQUAL 1
@@ -197,7 +206,10 @@ void setup()
   pinMode(13, OUTPUT);
   digitalWrite(13, HIGH);
 
-  sensors.begin();
+  sensor_1.begin();
+  sensor_2.begin();
+  sensor_3.begin();
+  sensor_4.begin();
 
   pinMode(JETI_RX, OUTPUT);
   JetiUartInit();
@@ -280,11 +292,14 @@ void process_screens()
 
 void loop()
 {   
-    sensors.requestTemperatures();
-    uTemp1 = sensors.getTempCByIndex(0);
-    uTemp2 = sensors.getTempCByIndex(1);
-    uTemp3 = sensors.getTempCByIndex(2);
-    uTemp4 = sensors.getTempCByIndex(3);
+    sensor_1.requestTemperaturesByIndex(0);
+    sensor_2.requestTemperaturesByIndex(0);
+    sensor_3.requestTemperaturesByIndex(0);
+    sensor_4.requestTemperaturesByIndex(0);
+    uTemp1 = sensor_1.getTempCByIndex(0);
+    uTemp2 = sensor_2.getTempCByIndex(0);
+    uTemp3 = sensor_3.getTempCByIndex(0);
+    uTemp4 = sensor_4.getTempCByIndex(0);
   
     if (uTemp1 == -127) {
         uTemp1 = 0;
